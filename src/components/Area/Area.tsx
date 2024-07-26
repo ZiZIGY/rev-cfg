@@ -1,5 +1,11 @@
 import { FC } from "react";
+import Header from "../Header";
 
 export const Area: FC = () => {
-  return <div>Активная область</div>;
+  return (
+    <div>
+      <Header />
+      Активная область
+    </div>
+  );
 };

@@ -23,17 +23,37 @@ export const findRecursive = (
       return true;
     }
     if (element.children) {
-      findRecursive(frontendId, element.children, callback);
+      findRecursive(
+        frontendId,
+        element.children as unknown as ConfigSection[] | ConfigSectionGroup[],
+        callback
+      );
     }
   });
 };
 
 export const createSection = (state: ConfigSlice) => {
-  return {
+  const section: ConfigSection = {
     frontId: state.currentFrontId++,
-    label: `Секция ${state.currentFrontId}`,
+    label: "",
     children: [],
     show: true,
+    multiple: false,
     type: ConfigEntityType.Section,
-  } as ConfigSection;
+  };
+  return section;
+};
+
+export const createSectionGroup = (
+  state: ConfigSlice,
+  section: ConfigSection | ConfigSectionGroup
+) => {
+  return {
+    children: [],
+    frontId: state.currentFrontId++,
+    label: "",
+    show: true,
+    multiple: false,
+    type: ConfigEntityType.SectionGroup,
+  } as ConfigSectionGroup;
 };

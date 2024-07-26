@@ -10,8 +10,6 @@ import RemoveButton from "../../RemoveButton";
 import { useAppDispatch } from "../../../hooks";
 
 export const SidebarBaseActions: FC = () => {
-  let timer: NodeJS.Timeout;
-
   const dispatch = useAppDispatch();
 
   const id = useId();

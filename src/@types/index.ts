@@ -14,13 +14,11 @@ export interface ConfigEntity<T> {
   show: boolean;
   type: T;
   label?: string;
+  multiple?: boolean;
 }
 
-export interface ConfigSection
-  extends ConfigEntity<
-    ConfigEntityType.Section | ConfigEntityType.SectionGroup
-  > {
-  children: ConfigSection[] | ConfigSectionGroup[];
+export interface ConfigSection extends ConfigEntity<ConfigEntityType.Section> {
+  children: (ConfigSection | ConfigSectionGroup)[];
 }
 
 export interface ConfigSectionGroup
@@ -38,7 +36,6 @@ export enum ConfigEntityType {
 }
 
 export interface ConfigList extends ConfigEntity<ConfigEntityType.List> {
-  multiple: boolean;
   name: string;
   values: string[];
 }

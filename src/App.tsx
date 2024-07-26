@@ -1,7 +1,6 @@
 import Area from "./components/Area";
 import { Box } from "@mui/material";
 import { FC } from "react";
-import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 
 export const App: FC = () => {
@@ -13,7 +12,6 @@ export const App: FC = () => {
         flexDirection: "column",
       }}
     >
-      <Header />
       <Box
         sx={{
           display: "flex",

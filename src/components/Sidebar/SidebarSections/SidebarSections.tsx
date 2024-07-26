@@ -1,21 +1,38 @@
+import { ConfigSection, ConfigSectionGroup } from "../../../@types";
 import { FC, useId } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { addSection, changeOrder } from "../../../redux/configSlice";
 
 import { List } from "@mui/material";
 import { Reorder } from "framer-motion";
 import SidebarSection from "./SidebarSection";
-import { changeOrder } from "../../../redux/configSlice";
+import { useAppDispatch } from "../../../hooks";
 
-export const SidebarSections: FC = () => {
+export const SidebarSections: FC<{
+  parent: ConfigSection | ConfigSectionGroup | undefined;
+  sections: ConfigSection[] | ConfigSectionGroup[];
+  padding?: string;
+}> = ({ parent, sections, padding }) => {
   const dispatch = useAppDispatch();
-  const { sections } = useAppSelector((state) => state.config);
   const id = useId();
 
   return (
-    <List key={id} id={id}>
+    <List
+      key={id}
+      id={id}
+      sx={{
+        paddingLeft: padding ? padding : 0,
+      }}
+    >
+      {parent && (
+        <div>
+          <button onClick={() => dispatch(addSection(parent.frontId))}>
+            +
+          </button>
+        </div>
+      )}
       <Reorder.Group
         axis="y"
-        values={sections}
+        values={sections as (ConfigSection | ConfigSectionGroup)[]}
         onReorder={(newOrder) => dispatch(changeOrder(newOrder))}
       >
         {sections.map((section) => (

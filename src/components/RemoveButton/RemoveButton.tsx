@@ -13,7 +13,9 @@ export const RemoveButton: FC<{
   removeFunction: Function;
 }> = (props) => {
   let timer: NodeJS.Timeout;
+
   const [removeClicked, setRemoveClicked] = useState(false);
+
   const [time, setTime] = useState(0);
 
   useEffect(() => {

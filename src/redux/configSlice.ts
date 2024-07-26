@@ -1,4 +1,9 @@
-import { ConfigEntity, ConfigSlice } from "../@types";
+import {
+  ConfigEntity,
+  ConfigSection,
+  ConfigSectionGroup,
+  ConfigSlice,
+} from "../@types";
 import { createSection, findRecursive } from "../lib";
 
 import { createSlice } from "@reduxjs/toolkit";
@@ -13,8 +18,11 @@ export const configSlice = createSlice({
   initialState: initialState,
   reducers: {
     addSection: (state, action: { payload: number | undefined }) => {
-      const createdSection = createSection(state);
+      const createdSection: ConfigSection = createSection(state);
       if (action.payload) {
+        findRecursive(action.payload, state.sections, (item: ConfigSection) => {
+          item.children.push(createdSection);
+        });
       } else {
         state.sections.push(createdSection);
       }
@@ -25,7 +33,7 @@ export const configSlice = createSlice({
     changeOrder: (state, action) => {
       state.sections = action.payload;
     },
-    changeVisibility: (state, action) => {
+    changeVisibility: (state, action: { payload: number }) => {
       findRecursive(
         action.payload,
         state.sections,
@@ -37,6 +45,29 @@ export const configSlice = createSlice({
     deleteItem: (state, action) => {
       findRecursive(action.payload, state.sections, "delete");
     },
+    changeLabel: (
+      state,
+      action: { payload: { id: number; label: string } }
+    ) => {
+      findRecursive(
+        action.payload.id,
+        state.sections,
+        (item: ConfigEntity<unknown>) => {
+          if (item.frontId === action.payload.id) {
+            item.label = action.payload.label;
+          }
+        }
+      );
+    },
+    changeMultiple: (state, action: { payload: number }) => {
+      findRecursive(
+        action.payload,
+        state.sections,
+        (item: ConfigEntity<unknown>) => {
+          item.multiple = !item.multiple;
+        }
+      );
+    },
   },
 });
 
@@ -46,6 +77,8 @@ export const {
   changeOrder,
   changeVisibility,
   deleteItem,
+  changeMultiple,
+  changeLabel,
 } = configSlice.actions;
 
 export default configSlice.reducer;
