@@ -5,6 +5,11 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export interface ConfigSlice {
+  filter: {
+    text: string;
+    highlight: number[];
+  };
+  openedSections: number[];
   currentFrontId: number | 0;
   sections: ConfigSection[];
 }
@@ -13,6 +18,7 @@ export interface ConfigEntity<T> {
   frontId: number | 0;
   show: boolean;
   type: T;
+  sort: number;
   label?: string;
   multiple?: boolean;
 }
@@ -20,6 +26,8 @@ export interface ConfigEntity<T> {
 export interface ConfigSection extends ConfigEntity<ConfigEntityType.Section> {
   children: Array<ConfigSection> & Array<ConfigSectionGroup>;
 }
+
+export type SortType = "asc" | "desc";
 
 export interface ConfigSectionGroup
   extends ConfigEntity<ConfigEntityType.SectionGroup> {
@@ -49,4 +57,4 @@ export type MUIColor =
   | "success"
   | "warning";
 
-export type RecursiveActions = "delete";
+export type RecursiveActions = "delete" | "includes";

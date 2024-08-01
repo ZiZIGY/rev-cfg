@@ -16,9 +16,12 @@ import { FC, useDeferredValue, useEffect, useState } from "react";
 import {
   changeLabel,
   changeMultiple,
+  changeOrder,
   changeVisibility,
   deleteItem,
+  toggleSection,
 } from "../../../../redux/configSlice";
+import { useAppDispatch, useAppSelector } from "../../../../hooks";
 
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -29,19 +32,21 @@ import { Tree } from "../Tree";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { baseDictionary } from "../../../../utils";
-import { useAppDispatch } from "../../../../hooks";
 
 export const TreeSection: FC<{
   item: ConfigSection | ConfigSectionGroup;
   parent: undefined | ConfigSection | ConfigSectionGroup;
 }> = ({ item, parent }) => {
-  const [opened, setOpened] = useState(false);
-
   const storeDispatch = useAppDispatch();
 
   const [label, setLabel] = useState<string | undefined>(item.label);
+  const [sort, setSort] = useState<number>(item.sort);
+  const { openedSections } = useAppSelector((state) => state.config);
+
+  const sectionOpen = openedSections.includes(item.frontId);
 
   const newLabel = useDeferredValue(label as string);
+  const newSort = useDeferredValue(sort as number);
 
   useEffect(() => {
     storeDispatch(
@@ -51,6 +56,15 @@ export const TreeSection: FC<{
       })
     );
   }, [newLabel]);
+
+  useEffect(() => {
+    storeDispatch(
+      changeOrder({
+        id: item.frontId,
+        sort: newSort,
+      })
+    );
+  }, [newSort]);
 
   return (
     <ListItem
@@ -84,16 +98,29 @@ export const TreeSection: FC<{
             >
               {item.multiple ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
             </IconButton>
-            <IconButton onClick={() => setOpened(!opened)}>
-              {opened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            <IconButton
+              onClick={() =>
+                storeDispatch(
+                  toggleSection({
+                    id: item.frontId,
+                    open: sectionOpen,
+                  })
+                )
+              }
+            >
+              {sectionOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
             <TextField
               label="Сортировка"
               size="small"
-              type="tel"
+              type="number"
+              value={item.sort}
               sx={{
                 minWidth: "60px",
               }}
+              onChange={({ target }) =>
+                setSort(Number(target.value) ? Number(target.value) : 0)
+              }
             />
             <Autocomplete
               disableClearable
@@ -121,7 +148,7 @@ export const TreeSection: FC<{
               removeFunction={() => storeDispatch(deleteItem(item.frontId))}
             ></RemoveButton>
           </Stack>
-          {opened && <Tree items={item.children} parent={item} />}
+          {sectionOpen && <Tree items={item.children} parent={item} />}
         </Stack>
       </Badge>
     </ListItem>
