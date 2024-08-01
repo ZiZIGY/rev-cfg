@@ -37,15 +37,15 @@ export const RemoveButton: FC<{
   return (
     <Tooltip title={props.label}>
       <IconButton
+        sx={{
+          position: "relative",
+        }}
         color={props.color ? props.color : "error"}
         onClick={() => {
           setTime(0);
           setRemoveClicked(!removeClicked);
         }}
         tabIndex={-1}
-        sx={{
-          position: "relative",
-        }}
       >
         {removeClicked && (
           <CircularProgress

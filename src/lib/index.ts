@@ -16,7 +16,6 @@ export const findRecursive = (
       if (typeof callback === "function") {
         callback(element);
       }
-
       if (callback === "delete") {
         array.splice(index, 1);
       }
@@ -32,16 +31,16 @@ export const findRecursive = (
   });
 };
 
-export const createSection = (state: ConfigSlice) => {
-  const section: ConfigSection = {
+export const createSection = (state: ConfigSlice, group?: boolean) => {
+  const section = {
     frontId: state.currentFrontId++,
     label: "",
     children: [],
     show: true,
     multiple: false,
-    type: ConfigEntityType.Section,
+    type: ConfigEntityType[group ? "SectionGroup" : "Section"],
   };
-  return section;
+  return section as ConfigSection | ConfigSectionGroup;
 };
 
 export const createSectionGroup = (

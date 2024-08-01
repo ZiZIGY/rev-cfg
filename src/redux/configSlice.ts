@@ -1,5 +1,6 @@
 import {
   ConfigEntity,
+  ConfigEntityType,
   ConfigSection,
   ConfigSectionGroup,
   ConfigSlice,
@@ -18,7 +19,7 @@ export const configSlice = createSlice({
   initialState: initialState,
   reducers: {
     addSection: (state, action: { payload: number | undefined }) => {
-      const createdSection: ConfigSection = createSection(state);
+      const createdSection = createSection(state) as ConfigSection;
       if (action.payload) {
         findRecursive(action.payload, state.sections, (item: ConfigSection) => {
           item.children.push(createdSection);
@@ -27,8 +28,33 @@ export const configSlice = createSlice({
         state.sections.push(createdSection);
       }
     },
-    clearSections: (state) => {
-      state.sections = [];
+    addSectionGroup: (state, action: { payload: number | undefined }) => {
+      const createdSectionGroup = createSection(
+        state,
+        true
+      ) as ConfigSectionGroup;
+      if (action.payload) {
+        findRecursive(
+          action.payload,
+          state.sections,
+          (item: ConfigSection | ConfigSectionGroup) => {
+            item.children.push(createdSectionGroup);
+          }
+        );
+      }
+    },
+    clearSections: (state, action: { payload: number | undefined }) => {
+      if (action.payload) {
+        findRecursive(
+          action.payload,
+          state.sections,
+          (section: ConfigSection | ConfigSectionGroup) => {
+            section.children = [];
+          }
+        );
+      } else {
+        state.sections = [];
+      }
     },
     changeOrder: (state, action) => {
       state.sections = action.payload;
@@ -77,6 +103,7 @@ export const {
   changeOrder,
   changeVisibility,
   deleteItem,
+  addSectionGroup,
   changeMultiple,
   changeLabel,
 } = configSlice.actions;

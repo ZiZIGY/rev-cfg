@@ -18,7 +18,7 @@ export interface ConfigEntity<T> {
 }
 
 export interface ConfigSection extends ConfigEntity<ConfigEntityType.Section> {
-  children: (ConfigSection | ConfigSectionGroup)[];
+  children: Array<ConfigSection> & Array<ConfigSectionGroup>;
 }
 
 export interface ConfigSectionGroup
