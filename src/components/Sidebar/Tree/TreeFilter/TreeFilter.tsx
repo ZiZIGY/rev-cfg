@@ -38,6 +38,7 @@ export const TreeFilter: FC = () => {
       renderInput={(params) => (
         <TextField
           {...params}
+          label="Поиск"
           onInput={({ target }) =>
             setFilterText((target as HTMLInputElement).value)
           }
