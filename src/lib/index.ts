@@ -1,3 +1,4 @@
+import { ConfigEntity, ConfigList } from "./../@types/index";
 import {
   ConfigEntityType,
   ConfigSection,
@@ -7,10 +8,24 @@ import {
   SortType,
 } from "../@types";
 
-export const findRecursive = (
-  values: [keyof ConfigSection | keyof ConfigSectionGroup, unknown],
+export const findRecursiveAll = (
   array: ConfigSection[] | ConfigSectionGroup[],
-  callback?: Function | RecursiveActions,
+  returnedArray: (ConfigSection | ConfigSectionGroup)[] = []
+) => {
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index];
+    returnedArray.push(element);
+    if (element.children) {
+      findRecursiveAll(element.children, returnedArray);
+    }
+  }
+  return returnedArray;
+};
+
+export const findRecursive = (
+  values: [keyof ConfigEntity<unknown>, unknown],
+  array: ConfigSection[] | ConfigSectionGroup[],
+  callback?: CallableFunction | RecursiveActions,
   parents: (ConfigSection | ConfigSectionGroup)[] = []
 ) => {
   const [key, value] = values;
@@ -61,10 +76,7 @@ export const createSection = (state: ConfigSlice, group?: boolean) => {
   return section as ConfigSection | ConfigSectionGroup;
 };
 
-export const createSectionGroup = (
-  state: ConfigSlice,
-  section: ConfigSection | ConfigSectionGroup
-) => {
+export const createSectionGroup = (state: ConfigSlice) => {
   return {
     sort: 0,
     children: [],
@@ -74,6 +86,17 @@ export const createSectionGroup = (
     multiple: false,
     type: ConfigEntityType.SectionGroup,
   } as ConfigSectionGroup;
+};
+
+export const createList = (state: ConfigSlice) => {
+  return {
+    frontId: state.currentFrontId++,
+    show: true,
+    type: ConfigEntityType.List,
+    sort: 0,
+    label: "",
+    multiple: false,
+  } as ConfigList;
 };
 
 export const sortItems = (

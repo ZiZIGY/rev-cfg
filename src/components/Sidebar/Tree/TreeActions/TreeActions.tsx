@@ -1,27 +1,18 @@
-import {
-  Box,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { Box, Divider, IconButton, Stack, Tooltip } from "@mui/material";
 import {
   ConfigEntityType,
   ConfigSection,
   ConfigSectionGroup,
   SortType,
 } from "../../../../@types";
-import { FC, useId, useState } from "react";
+import { FC, ReactNode, useId, useState } from "react";
 import {
+  addList,
   addSection,
   addSectionGroup,
-  changeFilterText,
   clearSections,
-  findSectionByFilter,
   reorder,
 } from "../../../../redux/configSlice";
-import { useAppDispatch, useAppSelector } from "../../../../hooks";
 
 import AddIcon from "@mui/icons-material/Add";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
@@ -32,7 +23,8 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import FolderOffIcon from "@mui/icons-material/FolderOff";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import RemoveButton from "../../../RemoveButton";
-import SearchIcon from "@mui/icons-material/Search";
+import TreeFilter from "../TreeFilter";
+import { useAppDispatch } from "../../../../hooks";
 
 export const TreeActions: FC<{
   parent: undefined | ConfigSection | ConfigSectionGroup;
@@ -41,8 +33,6 @@ export const TreeActions: FC<{
 
   const storeDispatch = useAppDispatch();
   const [sortType, setSortType] = useState<SortType>("asc");
-
-  const { text } = useAppSelector((state) => state.config.filter);
 
   const haveSection = parent
     ? parent?.children.some(
@@ -106,7 +96,8 @@ export const TreeActions: FC<{
         original: <AppsIcon color="action" />,
       },
       label: "Создать список",
-      onClick: () => console.log("Создать список"),
+      onClick: () =>
+        storeDispatch(addList(parent ? parent.frontId : undefined)),
       showComponent:
         parent?.type === ConfigEntityType.Section ||
         parent?.type === ConfigEntityType.SectionGroup,
@@ -180,27 +171,7 @@ export const TreeActions: FC<{
             </Tooltip>
           ) : null
         )}
-        {parent === undefined && (
-          <TextField
-            size="small"
-            label="Поиск"
-            fullWidth
-            value={text}
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  size="small"
-                  onClick={() => storeDispatch(findSectionByFilter())}
-                >
-                  <SearchIcon />
-                </IconButton>
-              ),
-            }}
-            onChange={({ target }) => {
-              storeDispatch(changeFilterText(target.value));
-            }}
-          />
-        )}
+        {parent === undefined && <TreeFilter />}
         <RemoveButton
           label="Удалить дочерние элементы"
           removeFunction={() =>
@@ -216,8 +187,8 @@ export const TreeActions: FC<{
 
 interface TreeAction {
   icon: {
-    original: any;
-    alternate?: any;
+    original: ReactNode;
+    alternate?: ReactNode;
     switch?: boolean;
   };
   label: string;

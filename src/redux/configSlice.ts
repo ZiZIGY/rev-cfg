@@ -4,15 +4,11 @@ import {
   ConfigSectionGroup,
   ConfigSlice,
 } from "../@types";
-import { createSection, findRecursive, sortItems } from "../lib";
+import { createList, createSection, findRecursive, sortItems } from "../lib";
 
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: ConfigSlice = {
-  filter: {
-    text: "",
-    highlight: [],
-  },
   openedSections: [],
   currentFrontId: 1,
   sections: [],
@@ -22,19 +18,22 @@ export const configSlice = createSlice({
   name: "config",
   initialState: initialState,
   reducers: {
-    changeFilterText: (state, action: { payload: string }) => {
-      state.filter.text = action.payload;
+    addList: (state, action: { payload: number | undefined }) => {
+      const createdList = createList(state);
+      findRecursive(
+        ["frontId", action.payload],
+        state.sections,
+        (item: ConfigSection | ConfigSectionGroup) => {
+          item.children.push(createdList);
+        }
+      );
     },
-    toggleSection: (
-      state,
-      action: { payload: { id: number; open: boolean } }
-    ) => {
-      action.payload.open
-        ? state.openedSections.splice(
-            state.openedSections.indexOf(action.payload.id),
-            1
-          )
-        : state.openedSections.push(action.payload.id);
+    toggleSection: (state, action: { payload: number }) => {
+      state.openedSections.includes(action.payload)
+        ? (state.openedSections = state.openedSections.filter(
+            (id) => id !== action.payload
+          ))
+        : state.openedSections.push(action.payload);
     },
     addSection: (state, action: { payload: number | undefined }) => {
       const createdSection = createSection(state) as ConfigSection;
@@ -138,16 +137,8 @@ export const configSlice = createSlice({
         }
       );
     },
-    findSectionByFilter: (state) => {
-      state.filter.highlight = [];
-
-      const parents = findRecursive(
-        ["label", state.filter.text],
-        state.sections,
-        (item: ConfigSection | ConfigSectionGroup) => {
-          state.filter.highlight.push(item.frontId);
-        }
-      );
+    findSectionByFilter: (state, action: { payload: string }) => {
+      const parents = findRecursive(["label", action.payload], state.sections);
 
       state.openedSections = parents.map((item) => item.frontId);
     },
@@ -156,10 +147,10 @@ export const configSlice = createSlice({
 
 export const {
   addSection,
+  addList,
   clearSections,
   changeOrder,
   findSectionByFilter,
-  changeFilterText,
   changeVisibility,
   deleteItem,
   toggleSection,

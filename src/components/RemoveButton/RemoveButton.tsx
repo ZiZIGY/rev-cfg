@@ -10,7 +10,7 @@ export const RemoveButton: FC<{
   label?: string;
   color?: MUIColor;
   increase: number;
-  removeFunction: Function;
+  removeFunction: CallableFunction;
 }> = (props) => {
   let timer: NodeJS.Timeout;
 
@@ -29,9 +29,7 @@ export const RemoveButton: FC<{
         }
       }, 100);
 
-    return () => {
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [removeClicked, time]);
 
   return (

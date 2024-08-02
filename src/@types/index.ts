@@ -5,10 +5,6 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export interface ConfigSlice {
-  filter: {
-    text: string;
-    highlight: number[];
-  };
   openedSections: number[];
   currentFrontId: number | 0;
   sections: ConfigSection[];
@@ -19,19 +15,22 @@ export interface ConfigEntity<T> {
   show: boolean;
   type: T;
   sort: number;
-  label?: string;
+  label: string;
   multiple?: boolean;
 }
 
 export interface ConfigSection extends ConfigEntity<ConfigEntityType.Section> {
-  children: Array<ConfigSection> & Array<ConfigSectionGroup>;
+  children: Array<ConfigSection> &
+    Array<ConfigSectionGroup> &
+    Array<ConfigList>;
+  values: number[];
 }
 
 export type SortType = "asc" | "desc";
 
 export interface ConfigSectionGroup
   extends ConfigEntity<ConfigEntityType.SectionGroup> {
-  children: ConfigSectionGroup[];
+  children: Array<ConfigSectionGroup> & Array<ConfigList>;
 }
 
 export enum ConfigEntityType {
@@ -44,8 +43,7 @@ export enum ConfigEntityType {
 }
 
 export interface ConfigList extends ConfigEntity<ConfigEntityType.List> {
-  name: string;
-  values: string[];
+  children: [];
 }
 
 export type MUIColor =

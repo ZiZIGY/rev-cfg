@@ -36,14 +36,14 @@ import { baseDictionary } from "../../../../utils";
 export const TreeSection: FC<{
   item: ConfigSection | ConfigSectionGroup;
   parent: undefined | ConfigSection | ConfigSectionGroup;
-}> = ({ item, parent }) => {
+}> = (props) => {
   const storeDispatch = useAppDispatch();
 
-  const [label, setLabel] = useState<string | undefined>(item.label);
-  const [sort, setSort] = useState<number>(item.sort);
+  const [label, setLabel] = useState<string | undefined>(props.item.label);
+  const [sort, setSort] = useState<number>(props.item.sort);
   const { openedSections } = useAppSelector((state) => state.config);
 
-  const sectionOpen = openedSections.includes(item.frontId);
+  const sectionOpen = openedSections.includes(props.item.frontId);
 
   const newLabel = useDeferredValue(label as string);
   const newSort = useDeferredValue(sort as number);
@@ -51,7 +51,7 @@ export const TreeSection: FC<{
   useEffect(() => {
     storeDispatch(
       changeLabel({
-        id: item.frontId,
+        id: props.item.frontId,
         label: newLabel,
       })
     );
@@ -60,7 +60,7 @@ export const TreeSection: FC<{
   useEffect(() => {
     storeDispatch(
       changeOrder({
-        id: item.frontId,
+        id: props.item.frontId,
         sort: newSort,
       })
     );
@@ -68,7 +68,7 @@ export const TreeSection: FC<{
 
   return (
     <ListItem
-      key={item.frontId}
+      key={props.item.frontId}
       sx={{
         padding: 0,
         marginBottom: 1,
@@ -77,8 +77,10 @@ export const TreeSection: FC<{
     >
       <Badge
         showZero
-        color={item.type === ConfigEntityType.Section ? "primary" : "secondary"}
-        badgeContent={item.children?.length}
+        color={
+          props.item.type === ConfigEntityType.Section ? "primary" : "secondary"
+        }
+        badgeContent={props.item.children?.length}
         className="w-full"
         max={99}
       >
@@ -89,24 +91,23 @@ export const TreeSection: FC<{
             divider={<Divider orientation="vertical" flexItem />}
           >
             <IconButton
-              onClick={() => storeDispatch(changeVisibility(item.frontId))}
-            >
-              {item.show ? <VisibilityIcon /> : <VisibilityOffIcon />}
-            </IconButton>
-            <IconButton
-              onClick={() => storeDispatch(changeMultiple(item.frontId))}
-            >
-              {item.multiple ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-            </IconButton>
-            <IconButton
               onClick={() =>
-                storeDispatch(
-                  toggleSection({
-                    id: item.frontId,
-                    open: sectionOpen,
-                  })
-                )
+                storeDispatch(changeVisibility(props.item.frontId))
               }
+            >
+              {props.item.show ? <VisibilityIcon /> : <VisibilityOffIcon />}
+            </IconButton>
+            <IconButton
+              onClick={() => storeDispatch(changeMultiple(props.item.frontId))}
+            >
+              {props.item.multiple ? (
+                <CheckBoxIcon />
+              ) : (
+                <CheckBoxOutlineBlankIcon />
+              )}
+            </IconButton>
+            <IconButton
+              onClick={() => storeDispatch(toggleSection(props.item.frontId))}
             >
               {sectionOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
@@ -114,7 +115,7 @@ export const TreeSection: FC<{
               label="Сортировка"
               size="small"
               type="number"
-              value={item.sort}
+              value={props.item.sort}
               sx={{
                 minWidth: "60px",
               }}
@@ -126,7 +127,7 @@ export const TreeSection: FC<{
               disableClearable
               freeSolo
               fullWidth
-              value={item.label}
+              value={props.item.label}
               size="small"
               onChange={(_, value) => setLabel(value)}
               options={baseDictionary.sort((a, b) => a.localeCompare(b))}
@@ -144,11 +145,15 @@ export const TreeSection: FC<{
             />
             <RemoveButton
               increase={25}
-              label={"Удалить" + " " + item.label}
-              removeFunction={() => storeDispatch(deleteItem(item.frontId))}
+              label={"Удалить" + " " + props.item.label}
+              removeFunction={() =>
+                storeDispatch(deleteItem(props.item.frontId))
+              }
             ></RemoveButton>
           </Stack>
-          {sectionOpen && <Tree items={item.children} parent={item} />}
+          {sectionOpen && (
+            <Tree items={props.item.children} parent={props.item} />
+          )}
         </Stack>
       </Badge>
     </ListItem>
