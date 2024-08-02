@@ -1,5 +1,6 @@
 import { Box, Divider, IconButton, Stack, Tooltip } from "@mui/material";
 import {
+  ConfigEntity,
   ConfigEntityType,
   ConfigSection,
   ConfigSectionGroup,
@@ -36,15 +37,24 @@ export const TreeActions: FC<{
 
   const haveSection = parent
     ? parent?.children.some(
-        (child: ConfigSection | ConfigSectionGroup) =>
+        (child: ConfigEntity<unknown>) =>
           child.type === ConfigEntityType.Section
       )
     : false;
 
   const haveSectionGroup = parent
     ? parent.children.some(
-        (child: ConfigSection | ConfigSectionGroup) =>
+        (child: ConfigEntity<unknown>) =>
           child.type === ConfigEntityType.SectionGroup
+      )
+    : false;
+
+  const haveItems = parent
+    ? parent.children.some(
+        (child: ConfigEntity<unknown>) =>
+          child.type === ConfigEntityType.List ||
+          child.type === ConfigEntityType.Input ||
+          child.type === ConfigEntityType.Select
       )
     : false;
 
@@ -60,11 +70,12 @@ export const TreeActions: FC<{
             }}
           />
         ),
-        switch: haveSectionGroup,
+        switch: haveSectionGroup || haveItems,
       },
       label: "Создать раздел",
       onClick: () => {
         !haveSectionGroup &&
+          !haveItems &&
           storeDispatch(addSection(parent ? parent.frontId : undefined));
       },
       showComponent:
@@ -81,11 +92,12 @@ export const TreeActions: FC<{
             }}
           />
         ),
-        switch: haveSection,
+        switch: haveSection || haveItems,
       },
       label: "Создать группу",
       onClick: () =>
         !haveSection &&
+        !haveItems &&
         storeDispatch(addSectionGroup(parent ? parent.frontId : undefined)),
       showComponent:
         parent?.type === ConfigEntityType.SectionGroup ||
@@ -94,9 +106,20 @@ export const TreeActions: FC<{
     {
       icon: {
         original: <AppsIcon color="action" />,
+        alternate: (
+          <AppsIcon
+            color="disabled"
+            sx={{
+              opacity: 0.5,
+            }}
+          />
+        ),
+        switch: haveSectionGroup || haveSection,
       },
       label: "Создать список",
       onClick: () =>
+        !haveSection &&
+        !haveSectionGroup &&
         storeDispatch(addList(parent ? parent.frontId : undefined)),
       showComponent:
         parent?.type === ConfigEntityType.Section ||

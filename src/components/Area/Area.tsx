@@ -1,11 +1,6 @@
+import { Box } from "@mui/material";
 import { FC } from "react";
-import Header from "../Header";
 
 export const Area: FC = () => {
-  return (
-    <div>
-      <Header />
-      Активная область
-    </div>
-  );
+  return <Box sx={{ height: "100%" }}>Активная область</Box>;
 };

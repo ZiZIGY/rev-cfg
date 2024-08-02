@@ -145,7 +145,7 @@ export const TreeSection: FC<{
             />
             <RemoveButton
               increase={25}
-              label={"Удалить" + " " + props.item.label}
+              label={`Удалить ${props.item.label}`}
               removeFunction={() =>
                 storeDispatch(deleteItem(props.item.frontId))
               }
