@@ -15,9 +15,9 @@ export const TreeFilter: FC = () => {
 
   const allSections = findRecursiveAll(sections);
   const filterOptions = allSections
-    .map((option) => option.label.trim())
+    .map((option) => option.label?.trim())
     .filter(
-      (label, index, array) => array.indexOf(label) === index && label.trim()
+      (label, index, array) => array.indexOf(label) === index && label?.trim()
     );
 
   useEffect(() => {

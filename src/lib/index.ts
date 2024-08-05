@@ -5,7 +5,6 @@ import {
   ConfigSectionGroup,
   ConfigSlice,
   RecursiveActions,
-  SortType,
 } from "../@types";
 
 export const findRecursiveAll = (
@@ -99,14 +98,6 @@ export const createList = (state: ConfigSlice) => {
   } as ConfigList;
 };
 
-export const sortItems = (
-  a: { sort: number },
-  b: { sort: number },
-  sort: SortType
-) => {
-  if (sort === "asc") {
-    return a.sort - b.sort;
-  } else {
-    return b.sort - a.sort;
-  }
+export const sortItems = (a: { sort: number }, b: { sort: number }) => {
+  return a.sort - b.sort;
 };

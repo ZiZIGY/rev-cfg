@@ -4,7 +4,7 @@ import { CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
-import { MUIColor } from "../../@types";
+import { MUIColor } from "../../../@types";
 
 export const RemoveButton: FC<{
   label?: string;

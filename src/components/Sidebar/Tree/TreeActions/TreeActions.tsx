@@ -4,26 +4,23 @@ import {
   ConfigEntityType,
   ConfigSection,
   ConfigSectionGroup,
-  SortType,
+  TreeAction,
 } from "../../../../@types";
-import { FC, ReactNode, useId, useState } from "react";
+import { FC, useId } from "react";
 import {
   addList,
   addSection,
   addSectionGroup,
   clearSections,
-  reorder,
 } from "../../../../redux/configSlice";
 
 import AddIcon from "@mui/icons-material/Add";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import AppsIcon from "@mui/icons-material/Apps";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import FolderOffIcon from "@mui/icons-material/FolderOff";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
-import RemoveButton from "../../../RemoveButton";
+import RemoveButton from "../../../UI/RemoveButton";
 import TreeFilter from "../TreeFilter";
 import { useAppDispatch } from "../../../../hooks";
 
@@ -33,7 +30,6 @@ export const TreeActions: FC<{
   const id = useId();
 
   const storeDispatch = useAppDispatch();
-  const [sortType, setSortType] = useState<SortType>("asc");
 
   const haveSection = parent
     ? parent?.children.some(
@@ -145,27 +141,6 @@ export const TreeActions: FC<{
         parent?.type === ConfigEntityType.Section ||
         parent?.type === ConfigEntityType.SectionGroup,
     },
-    {
-      icon: {
-        original: <ArrowUpwardIcon color="action" />,
-        alternate: <ArrowDownwardIcon color="action" />,
-        switch: sortType === "desc",
-      },
-      label: "Изменить сортировку",
-      onClick: () => {
-        setSortType(sortType === "asc" ? "desc" : "asc");
-        storeDispatch(
-          reorder({
-            id: parent ? parent.frontId : undefined,
-            sort: sortType,
-          })
-        );
-      },
-      showComponent:
-        parent === undefined ||
-        parent.type === ConfigEntityType.Section ||
-        parent.type === ConfigEntityType.SectionGroup,
-    },
   ];
 
   return (
@@ -207,14 +182,3 @@ export const TreeActions: FC<{
     </Box>
   );
 };
-
-interface TreeAction {
-  icon: {
-    original: ReactNode;
-    alternate?: ReactNode;
-    switch?: boolean;
-  };
-  label: string;
-  onClick: () => void;
-  showComponent: boolean;
-}

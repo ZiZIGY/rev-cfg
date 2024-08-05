@@ -19,6 +19,7 @@ import {
   changeOrder,
   changeVisibility,
   deleteItem,
+  reorder,
   toggleSection,
 } from "../../../../redux/configSlice";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
@@ -27,7 +28,7 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import RemoveButton from "../../../RemoveButton";
+import RemoveButton from "../../../UI/RemoveButton";
 import { Tree } from "../Tree";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -64,6 +65,7 @@ export const TreeSection: FC<{
         sort: newSort,
       })
     );
+    storeDispatch(reorder(props.parent ? props.parent.frontId : undefined));
   }, [newSort]);
 
   return (
@@ -91,6 +93,7 @@ export const TreeSection: FC<{
             divider={<Divider orientation="vertical" flexItem />}
           >
             <IconButton
+              tabIndex={-1}
               onClick={() =>
                 storeDispatch(changeVisibility(props.item.frontId))
               }
@@ -98,6 +101,7 @@ export const TreeSection: FC<{
               {props.item.show ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
             <IconButton
+              tabIndex={-1}
               onClick={() => storeDispatch(changeMultiple(props.item.frontId))}
             >
               {props.item.multiple ? (
@@ -107,6 +111,7 @@ export const TreeSection: FC<{
               )}
             </IconButton>
             <IconButton
+              tabIndex={-1}
               onClick={() => storeDispatch(toggleSection(props.item.frontId))}
             >
               {sectionOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -116,8 +121,10 @@ export const TreeSection: FC<{
               size="small"
               type="number"
               value={props.item.sort}
+              autoFocus
               sx={{
                 minWidth: "60px",
+                width: "max-content",
               }}
               onChange={({ target }) =>
                 setSort(Number(target.value) ? Number(target.value) : 0)

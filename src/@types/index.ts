@@ -1,3 +1,5 @@
+import { ReactElement, ReactNode } from "react";
+
 import { store } from "../redux/store";
 
 export type RootState = ReturnType<typeof store.getState>;
@@ -15,7 +17,7 @@ export interface ConfigEntity<T> {
   show: boolean;
   type: T;
   sort: number;
-  label: string;
+  label?: string;
   multiple?: boolean;
 }
 
@@ -26,7 +28,25 @@ export interface ConfigSection extends ConfigEntity<ConfigEntityType.Section> {
   values: number[];
 }
 
-export type SortType = "asc" | "desc";
+export interface AreaSlice {
+  componentsIds: number[];
+}
+
+export interface TreeItemAction {
+  component: ReactElement;
+  show: boolean;
+}
+
+export interface TreeAction {
+  icon: {
+    original: ReactNode;
+    alternate?: ReactNode;
+    switch?: boolean;
+  };
+  label: string;
+  onClick: () => void;
+  showComponent: boolean;
+}
 
 export interface ConfigSectionGroup
   extends ConfigEntity<ConfigEntityType.SectionGroup> {
@@ -43,7 +63,21 @@ export enum ConfigEntityType {
 }
 
 export interface ConfigList extends ConfigEntity<ConfigEntityType.List> {
-  children: [];
+  values: ConfigItemValue[];
+}
+
+export interface ConfigItemValue extends ConfigEntity<ConfigEntityType.Value> {
+  picture?: number | string;
+  price: {
+    type: PriceTypes;
+    value: number;
+  };
+}
+
+export enum PriceTypes {
+  Percent = "percent",
+  Currency = "currency",
+  Free = "free",
 }
 
 export type MUIColor =
@@ -56,3 +90,8 @@ export type MUIColor =
   | "warning";
 
 export type RecursiveActions = "delete" | "includes";
+
+export type ActiveComponent = {
+  parents?: (ConfigSection | ConfigSectionGroup)[];
+  item?: ConfigSection | ConfigSectionGroup;
+};

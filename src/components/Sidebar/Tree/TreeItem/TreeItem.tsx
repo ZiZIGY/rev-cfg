@@ -2,29 +2,34 @@ import {
   ConfigList,
   ConfigSection,
   ConfigSectionGroup,
+  TreeItemAction,
 } from "../../../../@types";
 import { Divider, IconButton, ListItem, Stack, TextField } from "@mui/material";
-import { FC, ReactElement, useDeferredValue, useEffect, useState } from "react";
+import { FC, useDeferredValue, useEffect, useState } from "react";
 import {
   changeMultiple,
   changeOrder,
   changeVisibility,
   deleteItem,
 } from "../../../../redux/configSlice";
+import { useAppDispatch, useAppSelector } from "../../../../hooks";
 
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import EditIcon from "@mui/icons-material/Edit";
-import RemoveButton from "../../../RemoveButton";
+import EditOffIcon from "@mui/icons-material/EditOff";
+import RemoveButton from "../../../UI/RemoveButton";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { useAppDispatch } from "../../../../hooks";
+import { toggleComponent } from "../../../../redux/areaSlice";
 
 export const TreeItem: FC<{
   item: ConfigList;
   parent: ConfigSection | ConfigSectionGroup;
 }> = (props) => {
   const storeDispatch = useAppDispatch();
+
+  const { componentsIds } = useAppSelector((state) => state.area);
 
   const [sort, setSort] = useState<number>(props.item.sort);
 
@@ -34,6 +39,7 @@ export const TreeItem: FC<{
     {
       component: (
         <IconButton
+          tabIndex={-1}
           onClick={() => storeDispatch(changeVisibility(props.item.frontId))}
         >
           {props.item.show ? <VisibilityIcon /> : <VisibilityOffIcon />}
@@ -44,6 +50,7 @@ export const TreeItem: FC<{
     {
       component: (
         <IconButton
+          tabIndex={-1}
           onClick={() => storeDispatch(changeMultiple(props.item.frontId))}
         >
           {props.item.multiple ? (
@@ -57,8 +64,15 @@ export const TreeItem: FC<{
     },
     {
       component: (
-        <IconButton>
-          <EditIcon />
+        <IconButton
+          tabIndex={-1}
+          onClick={() => storeDispatch(toggleComponent(props.item.frontId))}
+        >
+          {componentsIds.includes(props.item.frontId) ? (
+            <EditIcon />
+          ) : (
+            <EditOffIcon />
+          )}
         </IconButton>
       ),
       show: true,
@@ -107,14 +121,11 @@ export const TreeItem: FC<{
         <RemoveButton
           increase={25}
           label="Удалить список"
-          removeFunction={() => storeDispatch(deleteItem(props.item.frontId))}
+          removeFunction={() => {
+            storeDispatch(deleteItem(props.item.frontId));
+          }}
         />
       </Stack>
     </ListItem>
   );
 };
-
-interface TreeItemAction {
-  component: ReactElement;
-  show: boolean;
-}

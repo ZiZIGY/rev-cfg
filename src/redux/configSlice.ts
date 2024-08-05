@@ -86,20 +86,17 @@ export const configSlice = createSlice({
         }
       );
     },
-    reorder: (
-      state,
-      action: { payload: { id: number | undefined; sort: "asc" | "desc" } }
-    ) => {
-      if (action.payload.id) {
+    reorder: (state, action: { payload: number | undefined }) => {
+      if (action.payload) {
         findRecursive(
-          ["frontId", action.payload.id],
+          ["frontId", action.payload],
           state.sections,
           (item: ConfigSection | ConfigSectionGroup) => {
-            item.children.sort((a, b) => sortItems(a, b, action.payload.sort));
+            item.children.sort((a, b) => sortItems(a, b));
           }
         );
       } else {
-        state.sections.sort((a, b) => sortItems(a, b, action.payload.sort));
+        state.sections.sort((a, b) => sortItems(a, b));
       }
     },
     changeVisibility: (state, action: { payload: number }) => {
