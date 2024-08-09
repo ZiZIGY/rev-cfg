@@ -16,9 +16,12 @@ export const areaSlice = createSlice({
         );
       } else state.componentsIds.push(action.payload);
     },
+    clearArea: (state) => {
+      state.componentsIds = [];
+    },
   },
 });
 
-export const { toggleComponent } = areaSlice.actions;
+export const { toggleComponent, clearArea } = areaSlice.actions;
 
 export default areaSlice.reducer;

@@ -1,10 +1,21 @@
 import {
   ConfigEntity,
+  ConfigItemValue,
+  ConfigList,
   ConfigSection,
   ConfigSectionGroup,
+  ConfigSelect,
   ConfigSlice,
+  Modals,
+  Picture,
 } from "../@types";
-import { createList, createSection, findRecursive, sortItems } from "../lib";
+import {
+  createList,
+  createSection,
+  createTableItem,
+  findRecursive,
+  sortItems,
+} from "../lib";
 
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -12,6 +23,13 @@ const initialState: ConfigSlice = {
   openedSections: [],
   currentFrontId: 1,
   sections: [],
+  pictures: [],
+  modals: {
+    img: {
+      isOpen: false,
+      element: 0,
+    },
+  },
 };
 
 export const configSlice = createSlice({
@@ -28,12 +46,39 @@ export const configSlice = createSlice({
         }
       );
     },
+    toggleModal: (
+      state,
+      action: {
+        payload: { type: keyof Modals; isOpen: boolean; element: number };
+      }
+    ) => {
+      state.modals[action.payload.type].isOpen = action.payload.isOpen;
+      state.modals[action.payload.type].element = action.payload.element;
+    },
     toggleSection: (state, action: { payload: number }) => {
       state.openedSections.includes(action.payload)
         ? (state.openedSections = state.openedSections.filter(
             (id) => id !== action.payload
           ))
         : state.openedSections.push(action.payload);
+    },
+    changeImage: (
+      state,
+      action: {
+        payload: {
+          id: number;
+          picture: number;
+        };
+      }
+    ) => {
+      findRecursive(
+        ["frontId", action.payload.id],
+        state.sections,
+        (item: ConfigItemValue) => {
+          item.picture = action.payload.picture;
+          console.log(item.picture);
+        }
+      );
     },
     addSection: (state, action: { payload: number | undefined }) => {
       const createdSection = createSection(state) as ConfigSection;
@@ -48,6 +93,16 @@ export const configSlice = createSlice({
       } else {
         state.sections.push(createdSection);
       }
+    },
+    addTableItem: (state, action: { payload: number }) => {
+      const createdTableItem = createTableItem(state);
+      findRecursive(
+        ["frontId", action.payload],
+        state.sections,
+        (item: ConfigList | ConfigSelect) => {
+          item.children.push(createdTableItem);
+        }
+      );
     },
     addSectionGroup: (state, action: { payload: number | undefined }) => {
       const createdSectionGroup = createSection(
@@ -139,14 +194,21 @@ export const configSlice = createSlice({
 
       state.openedSections = parents.map((item) => item.frontId);
     },
+    addPictures: (state, action: { payload: Picture[] }) => {
+      state.pictures = action.payload;
+    },
   },
 });
 
 export const {
+  changeImage,
   addSection,
+  addPictures,
   addList,
   clearSections,
+  addTableItem,
   changeOrder,
+  toggleModal,
   findSectionByFilter,
   changeVisibility,
   deleteItem,

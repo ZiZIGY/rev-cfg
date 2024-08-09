@@ -37,6 +37,7 @@ export const Tree: FC<{
             />
           ) : (
             <TreeItem
+              key={index}
               item={item}
               parent={parent as ConfigSection | ConfigSectionGroup}
             />

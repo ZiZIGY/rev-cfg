@@ -7,6 +7,7 @@ import {
 import { Divider, IconButton, ListItem, Stack, TextField } from "@mui/material";
 import { FC, useDeferredValue, useEffect, useState } from "react";
 import {
+  changeLabel,
   changeMultiple,
   changeOrder,
   changeVisibility,
@@ -32,13 +33,34 @@ export const TreeItem: FC<{
   const { componentsIds } = useAppSelector((state) => state.area);
 
   const [sort, setSort] = useState<number>(props.item.sort);
+  const [label, setLabel] = useState<string | undefined>(props.item.label);
 
   const newSort = useDeferredValue(sort as number);
+  const newLabel = useDeferredValue(label as string);
+
+  useEffect(() => {
+    storeDispatch(
+      changeOrder({
+        id: props.item.frontId,
+        sort: newSort,
+      })
+    );
+  }, [newSort]);
+
+  useEffect(() => {
+    storeDispatch(
+      changeLabel({
+        id: props.item.frontId,
+        label: newLabel,
+      })
+    );
+  }, [newLabel]);
 
   const actions: TreeItemAction[] = [
     {
       component: (
         <IconButton
+          key={props.item.frontId + "-visibility"}
           tabIndex={-1}
           onClick={() => storeDispatch(changeVisibility(props.item.frontId))}
         >
@@ -50,6 +72,7 @@ export const TreeItem: FC<{
     {
       component: (
         <IconButton
+          key={props.item.frontId + "-multiple"}
           tabIndex={-1}
           onClick={() => storeDispatch(changeMultiple(props.item.frontId))}
         >
@@ -65,6 +88,7 @@ export const TreeItem: FC<{
     {
       component: (
         <IconButton
+          key={props.item.frontId + "-edit"}
           tabIndex={-1}
           onClick={() => storeDispatch(toggleComponent(props.item.frontId))}
         >
@@ -78,15 +102,6 @@ export const TreeItem: FC<{
       show: true,
     },
   ];
-
-  useEffect(() => {
-    storeDispatch(
-      changeOrder({
-        id: props.item.frontId,
-        sort: newSort,
-      })
-    );
-  }, [newSort]);
 
   return (
     <ListItem
@@ -113,10 +128,16 @@ export const TreeItem: FC<{
           sx={{
             minWidth: "60px",
           }}
-          fullWidth
           onChange={({ target }) =>
             setSort(Number(target.value) ? Number(target.value) : 0)
           }
+        />
+        <TextField
+          label="Компонент"
+          size="small"
+          fullWidth
+          value={label}
+          onChange={({ target }) => setLabel(target.value)}
         />
         <RemoveButton
           increase={25}

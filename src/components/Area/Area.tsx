@@ -1,4 +1,4 @@
-import AreaComponents from "./AreaComponents";
+import { AreaComponents } from "./AreaComponents";
 import { Box } from "@mui/material";
 import { FC } from "react";
 

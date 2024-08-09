@@ -1,4 +1,9 @@
-import { ConfigEntity, ConfigList } from "./../@types/index";
+import {
+  ConfigEntity,
+  ConfigItemValue,
+  ConfigList,
+  PriceTypes,
+} from "./../@types/index";
 import {
   ConfigEntityType,
   ConfigSection,
@@ -25,7 +30,7 @@ export const findRecursive = (
   values: [keyof ConfigEntity<unknown>, unknown],
   array: ConfigSection[] | ConfigSectionGroup[],
   callback?: CallableFunction | RecursiveActions,
-  parents: (ConfigSection | ConfigSectionGroup)[] = []
+  parents: ConfigEntity<unknown>[] = []
 ) => {
   const [key, value] = values;
 
@@ -59,6 +64,13 @@ export const findRecursive = (
       }
     }
   }
+
+  const parentsMap = new Map(
+    parents.map((parent) => [parent["frontId"], parent])
+  ).values();
+
+  parents = Array.from(parentsMap);
+
   return parents;
 };
 
@@ -76,7 +88,7 @@ export const createSection = (state: ConfigSlice, group?: boolean) => {
 };
 
 export const createSectionGroup = (state: ConfigSlice) => {
-  return {
+  const sectionGroup: ConfigSectionGroup = {
     sort: 0,
     children: [],
     frontId: state.currentFrontId++,
@@ -84,18 +96,36 @@ export const createSectionGroup = (state: ConfigSlice) => {
     show: true,
     multiple: false,
     type: ConfigEntityType.SectionGroup,
-  } as ConfigSectionGroup;
+  };
+  return sectionGroup;
 };
 
 export const createList = (state: ConfigSlice) => {
-  return {
+  const list: ConfigList = {
     frontId: state.currentFrontId++,
     show: true,
     type: ConfigEntityType.List,
     sort: 0,
     label: "",
     multiple: false,
-  } as ConfigList;
+    children: [],
+  };
+  return list;
+};
+
+export const createTableItem = (state: ConfigSlice) => {
+  const newTableItem: ConfigItemValue = {
+    frontId: state.currentFrontId++,
+    label: "",
+    show: true,
+    sort: 0,
+    type: ConfigEntityType.Value,
+    price: {
+      type: PriceTypes.Currency,
+      value: 0,
+    },
+  };
+  return newTableItem;
 };
 
 export const sortItems = (a: { sort: number }, b: { sort: number }) => {

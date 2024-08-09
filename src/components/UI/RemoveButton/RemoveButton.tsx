@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { CircularProgress, IconButton, Tooltip } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, Fragment, useEffect, useId, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import { MUIColor } from "../../../@types";
@@ -18,6 +18,8 @@ export const RemoveButton: FC<{
 
   const [time, setTime] = useState(0);
 
+  const id = useId();
+
   useEffect(() => {
     if (removeClicked)
       timer = setTimeout(() => {
@@ -33,30 +35,33 @@ export const RemoveButton: FC<{
   }, [removeClicked, time]);
 
   return (
-    <Tooltip title={props.label}>
-      <IconButton
-        sx={{
-          position: "relative",
-        }}
-        color={props.color ? props.color : "error"}
-        onClick={() => {
-          setTime(0);
-          setRemoveClicked(!removeClicked);
-        }}
-        tabIndex={-1}
-      >
-        {removeClicked && (
-          <CircularProgress
-            variant="determinate"
-            value={time}
-            color={props.color ? props.color : "error"}
-            sx={{
-              position: "absolute",
-            }}
-          />
-        )}
-        <DeleteIcon color={props.color ? props.color : "error"} />
-      </IconButton>
-    </Tooltip>
+    <Fragment key={id}>
+      <Tooltip title={props.label}>
+        <IconButton
+          id={id}
+          sx={{
+            position: "relative",
+          }}
+          color={props.color ? props.color : "error"}
+          onClick={() => {
+            setTime(0);
+            setRemoveClicked(!removeClicked);
+          }}
+          tabIndex={-1}
+        >
+          {removeClicked && (
+            <CircularProgress
+              variant="determinate"
+              value={time}
+              color={props.color ? props.color : "error"}
+              sx={{
+                position: "absolute",
+              }}
+            />
+          )}
+          <DeleteIcon color={props.color ? props.color : "error"} />
+        </IconButton>
+      </Tooltip>
+    </Fragment>
   );
 };

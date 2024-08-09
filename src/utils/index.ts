@@ -1,3 +1,5 @@
+import { PriceTypes } from "../@types";
+
 export const baseDictionary = [
   "Цвет",
   "Цвет корпуса",
@@ -17,4 +19,22 @@ export const baseDictionary = [
   "Дополнительный ящик",
   "Доп полка",
   "Доп штанга",
+];
+
+export const priceTypes: Array<{
+  label: string;
+  value: PriceTypes;
+}> = [
+  {
+    label: "%",
+    value: PriceTypes.Percent,
+  },
+  {
+    label: "₽",
+    value: PriceTypes.Currency,
+  },
+  {
+    label: "Бесплатно",
+    value: PriceTypes.Free,
+  },
 ];

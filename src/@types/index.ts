@@ -10,6 +10,8 @@ export interface ConfigSlice {
   openedSections: number[];
   currentFrontId: number | 0;
   sections: ConfigSection[];
+  pictures: Picture[];
+  modals: Modals;
 }
 
 export interface ConfigEntity<T> {
@@ -63,9 +65,14 @@ export enum ConfigEntityType {
 }
 
 export interface ConfigList extends ConfigEntity<ConfigEntityType.List> {
-  values: ConfigItemValue[];
+  children: ConfigItemValue[];
 }
 
+export interface ConfigSelect extends ConfigEntity<ConfigEntityType.Select> {
+  children: ConfigItemValue[];
+}
+
+export interface ConfigInput extends ConfigEntity<ConfigEntityType.Input> {}
 export interface ConfigItemValue extends ConfigEntity<ConfigEntityType.Value> {
   picture?: number | string;
   price: {
@@ -73,6 +80,13 @@ export interface ConfigItemValue extends ConfigEntity<ConfigEntityType.Value> {
     value: number;
   };
 }
+
+export type ConfigEntities =
+  | ConfigSection
+  | ConfigSectionGroup
+  | ConfigList
+  | ConfigSelect
+  | ConfigInput;
 
 export enum PriceTypes {
   Percent = "percent",
@@ -89,9 +103,47 @@ export type MUIColor =
   | "success"
   | "warning";
 
-export type RecursiveActions = "delete" | "includes";
+export type TableHeader = Array<{
+  label: string;
+  disabled: boolean;
+  show: boolean;
+  cellBody: (
+    cell: ConfigItemValue,
+    index: number,
+    pictures?: Picture[]
+  ) => ReactNode;
+}>;
 
-export type ActiveComponent = {
-  parents?: (ConfigSection | ConfigSectionGroup)[];
-  item?: ConfigSection | ConfigSectionGroup;
+export type Picture = {
+  ID: number;
+  UF_FILE: {
+    CONTENT_TYPE: string;
+    DESCRIPTION: string;
+    EXTERNAL_ID: string;
+    FILE_NAME: string;
+    FILE_SIZE: number;
+    HANDLER_ID: unknown;
+    HEIGHT: number;
+    ID: number;
+    META: string;
+    MODULE_ID: string;
+    ORIGINAL_NAME: string;
+    SRC: string;
+    SUBDIR: string;
+    TIMESTAMP_X: string;
+    VERSION_ORIGINAL_ID: null;
+    WIDTH: number;
+  };
+  UF_NAME: string;
 };
+
+export type Modals = {
+  img: {
+    isOpen: boolean;
+    element: number;
+  };
+};
+
+export type useFetchReturnType = { loading: boolean; fetchedData: any };
+
+export type RecursiveActions = "delete" | "includes";
